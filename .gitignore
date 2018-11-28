@@ -1,0 +1,6 @@
+*~
+*.pyc
+build
+dist
+taskfarm_worker.egg-info
+taskfarm_worker/__pycache__
