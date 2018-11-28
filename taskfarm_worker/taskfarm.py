@@ -1,4 +1,4 @@
-__all__ = ['TaskFarm','TaskFarmWorker']
+__all__ = ['tfRuns','TaskFarm','TaskFarmWorker']
 
 import socket
 import os
@@ -8,6 +8,13 @@ import requests
 from requests.auth import HTTPBasicAuth
 from uuid import uuid1
 
+def tfRuns(username,password,url_base='http://localhost:5000/api/'):
+    auth = HTTPBasicAuth(username, password)
+    response = requests.get(url_base+'runs', auth=auth)
+    if response.status_code != 200:
+        raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
+    return response.json()
+    
 class TaskFarm:
     def __init__(self,username,password,uuid = None, numTasks = None,url_base='http://localhost:5000/api/'):
         self._url_base = url_base
@@ -55,8 +62,11 @@ class TaskFarm:
         response = requests.get(self.url('runs/'+self.uuid),params={'info':info},auth=self.token_auth)
         if response.status_code != 200:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
-        
-        return response.json()[info]
+
+        if info=='':
+            return response.json()
+        else:
+            return response.json()[info]
 
     @property
     def percentDone(self):
@@ -88,7 +98,18 @@ class TaskFarm:
         response = requests.put(self.url('runs/'+self.uuid+'/tasks/'+str(task)),json=json.dumps(data),auth=self.token_auth)
         if response.status_code != 204:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
-    
+
+    def restart(self,everything=False):
+        data = {'all':str(everything)}
+        response = requests.post(self.url('runs/'+self.uuid+'/restart'),params=data,auth=self.token_auth)
+        if response.status_code != 204:
+            raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
+                                
+    def delete(self):
+        response = requests.delete(self.url('runs/'+self.uuid),auth=self.token_auth)
+        if response.status_code != 204:
+            raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
+        
 class TaskFarmWorker(TaskFarm):
     def __init__(self,username,password,uuid,url_base='http://localhost:5000/api/'):
         
@@ -136,7 +157,7 @@ class TaskFarmWorker(TaskFarm):
         if self._task is None:
             return
         if percentage <0 or percentage > 100:
-            raise ValueError, 'percentage %f out of range'%percentage
+            raise ValueError('percentage %f out of range'%percentage)
         self.setTaskInfo(self._task,'percentCompleted',percentage)
 
     def done(self):

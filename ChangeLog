@@ -1,3 +1,12 @@
+2018-11-28 Magnus Hagdorn
+ * README.md: updated
+ * example.py: fix python3 bug
+ * setup.py: install taskfarm manager script
+ * requirements.txt: add requirements file
+ * taskfarm_worker/__init__.py: fix python3 bug
+ * taskfarm_worker/taskfarm.py: add some more functionality
+ * taskfarm_worker/manage.py: add taskfarm manager script
+
 2018-11-28 Magnus Hagdorn 
  * create ChangeLog, first working version
 

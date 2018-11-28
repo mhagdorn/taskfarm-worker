@@ -22,7 +22,7 @@ else:
     print (tf.percentDone)
 
     for t in tf.tasks:
-        print "worker {} processing task {}".format(tf.worker_uuid,t)
+        print ("worker {} processing task {}".format(tf.worker_uuid,t))
         for i in range(1,11):
             time.sleep(random.randrange(1,15)/10.)
             tf.update(i*10)

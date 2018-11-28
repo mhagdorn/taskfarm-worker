@@ -1,1 +1,1 @@
-from taskfarm import *
+from .taskfarm import *
