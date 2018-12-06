@@ -13,7 +13,7 @@ def tfRuns(username,password,url_base='http://localhost:5000/api/'):
     response = requests.get(url_base+'runs', auth=auth)
     if response.status_code != 200:
         raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
-    return response.json()
+    return response.json()['data']
     
 class TaskFarm:
     def __init__(self,username,password,uuid = None, numTasks = None,url_base='http://localhost:5000/api/'):
