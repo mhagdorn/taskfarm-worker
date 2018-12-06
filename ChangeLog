@@ -1,3 +1,9 @@
+2018-12-06 Magnus Hagdorn
+ * example.py: add option to specify base URL
+ * requirements.txt: add requirements file
+ * taskfarm_worker/manage.py: add script to manage taskfarm
+ * taskfarm_worker/taskfarm.py: fix minor API change
+
 2018-11-28 Magnus Hagdorn
  * README.md: updated
  * example.py: fix python3 bug
