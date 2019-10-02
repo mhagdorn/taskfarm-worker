@@ -5,6 +5,8 @@ import os
 from datetime import datetime
 import json
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from requests.auth import HTTPBasicAuth
 from uuid import uuid1
 
@@ -19,9 +21,22 @@ class TaskFarm:
     def __init__(self,username,password,uuid = None, numTasks = None,url_base='http://localhost:5000/api/'):
         self._url_base = url_base
         self._tauth = None
+        self._session = requests.Session()
+
+        # setup session
+        # from: https://www.peterbe.com/plog/best-practice-with-retries-with-requests
+        retry = Retry(
+            total=3,
+            read=3,
+            connect=3,
+            backoff_factor=0.3,
+            status_forcelist=(500, 502, 503, 504)
+        )
+        adapter = HTTPAdapter(max_retries=retry)
+        self.session.mount(url_base, adapter)
         
         # get a token
-        response = requests.get(self.url('token'), auth=HTTPBasicAuth(username, password))
+        response = self.session.get(self.url('token'), auth=HTTPBasicAuth(username, password))
 
         if response.status_code != 200:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
@@ -30,13 +45,13 @@ class TaskFarm:
         if uuid is None:
             if numTasks == None:
                 raise RuntimeError('numTasks must be set when creating a new task')
-            response = requests.post(self.url('run'),json=json.dumps({"numTasks":numTasks}),auth=self.token_auth)
+            response = self.session.post(self.url('run'),json=json.dumps({"numTasks":numTasks}),auth=self.token_auth)
             if response.status_code != 201:
                 raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
             self._uuid = response.json()['uuid']
             self._numTasks = numTasks
         else:
-            response = requests.get(self.url('runs/'+uuid),auth=self.token_auth)
+            response = self.session.get(self.url('runs/'+uuid),auth=self.token_auth)
             if response.status_code != 200:
                 raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
             self._uuid = response.json()['uuid']
@@ -45,6 +60,10 @@ class TaskFarm:
     def url(self,url):
         return '{0}{1}'.format(self._url_base,url)
 
+    @property
+    def session(self):
+        return self._session
+    
     @property
     def token_auth(self):
         if self._tauth is None:
@@ -59,7 +78,7 @@ class TaskFarm:
         return self._numTasks
     
     def info(self,info):
-        response = requests.get(self.url('runs/'+self.uuid),params={'info':info},auth=self.token_auth)
+        response = self.session.get(self.url('runs/'+self.uuid),params={'info':info},auth=self.token_auth)
         if response.status_code != 200:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
 
@@ -83,7 +102,7 @@ class TaskFarm:
 
     def getTaskInfo(self,task,info):
         assert task >=0 and task < self.numTasks
-        response = requests.get(self.url('runs/'+self.uuid+'/tasks/'+str(task)),params={'info':info},auth=self.token_auth)
+        response = self.session.get(self.url('runs/'+self.uuid+'/tasks/'+str(task)),params={'info':info},auth=self.token_auth)
         if response.status_code != 200:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
 
@@ -95,18 +114,18 @@ class TaskFarm:
     def setTaskInfo(self,task,info,value):
         assert task >=0 and task < self.numTasks
         data = {info:value}
-        response = requests.put(self.url('runs/'+self.uuid+'/tasks/'+str(task)),json=json.dumps(data),auth=self.token_auth)
+        response = self.session.put(self.url('runs/'+self.uuid+'/tasks/'+str(task)),json=json.dumps(data),auth=self.token_auth)
         if response.status_code != 204:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
 
     def restart(self,everything=False):
         data = {'all':str(everything)}
-        response = requests.post(self.url('runs/'+self.uuid+'/restart'),params=data,auth=self.token_auth)
+        response = self.session.post(self.url('runs/'+self.uuid+'/restart'),params=data,auth=self.token_auth)
         if response.status_code != 204:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
                                 
     def delete(self):
-        response = requests.delete(self.url('runs/'+self.uuid),auth=self.token_auth)
+        response = self.session.delete(self.url('runs/'+self.uuid),auth=self.token_auth)
         if response.status_code != 204:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
         
@@ -124,7 +143,7 @@ class TaskFarmWorker(TaskFarm):
             "pid" : os.getpid(),
         }
 
-        response = requests.post(self.url('worker'),json=json.dumps(worker),auth=self.token_auth)
+        response = self.session.post(self.url('worker'),json=json.dumps(worker),auth=self.token_auth)
 
         if response.status_code != 201:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
@@ -139,7 +158,7 @@ class TaskFarmWorker(TaskFarm):
     def task(self):
         if self._task is None:
             worker = {'worker_uuid':self.worker_uuid}
-            response = requests.post(self.url('runs/'+self.uuid+'/task'),json=json.dumps(worker),auth=self.token_auth)
+            response = self.session.post(self.url('runs/'+self.uuid+'/task'),json=json.dumps(worker),auth=self.token_auth)
             if response.status_code == 204:
                 # no more tasks
                 return self._task

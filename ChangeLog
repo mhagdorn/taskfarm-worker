@@ -1,3 +1,7 @@
+2019-10-02 Magnus Hagdorn
+ * taskfarm_worker/taskfarm.py: use a session to retry connection to task farm
+   server
+
 2018-12-06 Magnus Hagdorn
  * example.py: add option to specify base URL
  * requirements.txt: add requirements file
