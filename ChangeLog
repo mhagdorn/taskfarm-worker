@@ -1,3 +1,7 @@
+2019-10-24 Magnus Hagdorn
+ * taskfarm_worker/taskfarm.py: increase number of retries to 10; don't mark
+   tasks as done when the percentageCompleted is not 100
+
 2019-10-02 Magnus Hagdorn
  * taskfarm_worker/taskfarm.py: use a session to retry connection to task farm
    server

@@ -25,10 +25,11 @@ class TaskFarm:
 
         # setup session
         # from: https://www.peterbe.com/plog/best-practice-with-retries-with-requests
+        retries = 10
         retry = Retry(
-            total=3,
-            read=3,
-            connect=3,
+            total=retries,
+            read=retries,
+            connect=retries,
             backoff_factor=0.3,
             status_forcelist=(500, 502, 503, 504)
         )
@@ -135,6 +136,7 @@ class TaskFarmWorker(TaskFarm):
         TaskFarm.__init__(self,username,password,uuid=uuid,url_base=url_base)
 
         self._task = None
+        self._percentageDone = None
         
         # register worker
         worker = {
@@ -157,6 +159,7 @@ class TaskFarmWorker(TaskFarm):
     @property
     def task(self):
         if self._task is None:
+            self._percentageDone = None
             worker = {'worker_uuid':self.worker_uuid}
             response = self.session.post(self.url('runs/'+self.uuid+'/task'),json=json.dumps(worker),auth=self.token_auth)
             if response.status_code == 204:
@@ -165,6 +168,7 @@ class TaskFarmWorker(TaskFarm):
             if response.status_code != 201:
                 raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
             self._task = response.json()['task']
+            self._percentageDone = self.getTaskInfo(self._task,'percentCompleted')
         return self._task
 
     @property
@@ -177,11 +181,13 @@ class TaskFarmWorker(TaskFarm):
             return
         if percentage <0 or percentage > 100:
             raise ValueError('percentage %f out of range'%percentage)
+        self._percentageDone = percentage
         self.setTaskInfo(self._task,'percentCompleted',percentage)
 
     def done(self):
         if self._task is not None:
-            self.setTaskInfo(self._task,'status','done')
+            if self._percentageDone is not None and abs(self._percentageDone-100) < 1e-6:
+                self.setTaskInfo(self._task,'status','done')
             self._task = None
             
 if __name__ == '__main__':
