@@ -3,7 +3,6 @@ __all__ = ['tfRuns','TaskFarm','TaskFarmWorker']
 import socket
 import os
 from datetime import datetime
-import json
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -46,7 +45,7 @@ class TaskFarm:
         if uuid is None:
             if numTasks == None:
                 raise RuntimeError('numTasks must be set when creating a new task')
-            response = self.session.post(self.url('run'),json=json.dumps({"numTasks":numTasks}),auth=self.token_auth)
+            response = self.session.post(self.url('run'),json={"numTasks":numTasks},auth=self.token_auth)
             if response.status_code != 201:
                 raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
             self._uuid = response.json()['uuid']
@@ -115,7 +114,7 @@ class TaskFarm:
     def setTaskInfo(self,task,info,value):
         assert task >=0 and task < self.numTasks
         data = {info:value}
-        response = self.session.put(self.url('runs/'+self.uuid+'/tasks/'+str(task)),json=json.dumps(data),auth=self.token_auth)
+        response = self.session.put(self.url('runs/'+self.uuid+'/tasks/'+str(task)),json=data,auth=self.token_auth)
         if response.status_code != 204:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
 
@@ -145,7 +144,7 @@ class TaskFarmWorker(TaskFarm):
             "pid" : os.getpid(),
         }
 
-        response = self.session.post(self.url('worker'),json=json.dumps(worker),auth=self.token_auth)
+        response = self.session.post(self.url('worker'),json=worker,auth=self.token_auth)
 
         if response.status_code != 201:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(response.status_code, response.content))
@@ -161,7 +160,7 @@ class TaskFarmWorker(TaskFarm):
         if self._task is None:
             self._percentageDone = None
             worker = {'worker_uuid':self.worker_uuid}
-            response = self.session.post(self.url('runs/'+self.uuid+'/task'),json=json.dumps(worker),auth=self.token_auth)
+            response = self.session.post(self.url('runs/'+self.uuid+'/task'),json=worker,auth=self.token_auth)
             if response.status_code == 204:
                 # no more tasks
                 return self._task

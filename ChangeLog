@@ -1,3 +1,6 @@
+2020-03-26 Magnus Hagdorn
+ * taskfarm_worker/taskfarm.py: do not transmit json strings
+
 2019-10-24 Magnus Hagdorn
  * taskfarm_worker/taskfarm.py: increase number of retries to 10; don't mark
    tasks as done when the percentageCompleted is not 100
