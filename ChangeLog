@@ -1,3 +1,6 @@
+2020-03-30 Magnus Hagdorn
+ * taskfarm_worker/taskfarm.py: add doc strings
+
 2020-03-26 Magnus Hagdorn
  * taskfarm_worker/taskfarm.py: do not transmit json strings
 
