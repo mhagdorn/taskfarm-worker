@@ -5,15 +5,12 @@
 
 Welcome to Taskfarm Worker's documentation!
 ===========================================
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-Taskfarm Worker API
-===================
-.. automodule:: taskfarm
-   :members:
+   worker	     
+   api
 
 Indices and tables
 ==================
