@@ -6,7 +6,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--baseurl',
                         default="http://localhost:5000/api/", help='API url')
-    parser.add_argument('--uuid', help="set run UUID")
+    parser.add_argument('uuid', nargs='?', help="run UUID")
     parser.add_argument('-u', '--user', default='dhdt',
                         help="the taskfarm user")
     parser.add_argument('-p', '--password', default='hello',
@@ -24,16 +24,14 @@ def main():
                             default=False,  help="delete run")
     args = parser.parse_args()
 
-    if args.uuid is None:
-        uuid = 'xxxxx'
-    else:
-        uuid = args.uuid
-
     if args.list:
         for r in tfRuns(args.user, args.password, url_base=args.baseurl):
             print("{run[id]} {run[uuid]} {run[numTasks]}".format(run=r))
     else:
-        tf = TaskFarm(args.user, args.password, uuid=uuid,
+        if args.uuid is None:
+            parser.error('No run UUID specified')
+        
+        tf = TaskFarm(args.user, args.password, uuid=args.uuid,
                       url_base=args.baseurl)
         if args.info:
             print("{info[id]} {info[uuid]} {info[numTasks]} "

@@ -1,4 +1,7 @@
 2020-03-30 Magnus Hagdorn
+ * taskfarm_worker/manage.py: use positional argument for run UUID
+
+2020-03-30 Magnus Hagdorn
  * taskfarm_worker/taskfarm.py: add doc strings
 
 2020-03-26 Magnus Hagdorn
