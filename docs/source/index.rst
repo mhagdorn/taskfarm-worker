@@ -9,7 +9,8 @@ Welcome to Taskfarm Worker's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   worker	     
+   intro
+   using
    api
 
 Indices and tables
