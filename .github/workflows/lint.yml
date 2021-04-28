@@ -12,9 +12,9 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8.8
+          python-version: 3.8
           architecture: x64
-      - name: Checkout cpas
+      - name: Checkout taskfarm-worker
         uses: actions/checkout@master
       - name: Install flake8
         run: pip install flake8
