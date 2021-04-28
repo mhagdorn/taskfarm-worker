@@ -11,7 +11,7 @@ setup(
     packages=find_packages(),
     version=release,
     include_package_data=True,
-    cmdclass = {'build_sphinx': BuildDoc},
+    cmdclass={'build_sphinx': BuildDoc},
     command_options={
         'build_sphinx': {
             'project': ('setup.py', name),
@@ -23,9 +23,12 @@ setup(
     install_requires=[
         'requests',
     ],
-    extras_require = {
+    extras_require={
         'docs': [
             'sphinx_rtd_theme',
+        ],
+        'lint': [
+            'flake8>=3.5.0',
         ],
     },
     entry_points={

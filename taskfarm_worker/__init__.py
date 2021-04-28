@@ -5,4 +5,4 @@ except DistributionNotFound:
     # package is not installed
     pass
 
-from .taskfarm import *
+from .taskfarm import *  # noqa: F401 F403

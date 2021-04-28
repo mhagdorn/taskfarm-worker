@@ -20,8 +20,8 @@ def main():
                             default=False, help="reset not completed tasks")
     main_modes.add_argument('--reset-all', '-R', action='store_true',
                             default=False, help="reset all tasks")
-    main_modes.add_argument('--delete',  '-d',  action='store_true',
-                            default=False,  help="delete run")
+    main_modes.add_argument('--delete', '-d', action='store_true',
+                            default=False, help="delete run")
     args = parser.parse_args()
 
     if args.list:
@@ -30,7 +30,7 @@ def main():
     else:
         if args.uuid is None:
             parser.error('No run UUID specified')
-        
+
         tf = TaskFarm(args.user, args.password, uuid=args.uuid,
                       url_base=args.baseurl)
         if args.info:

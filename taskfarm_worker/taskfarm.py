@@ -16,14 +16,15 @@ def tfRuns(username, password, url_base='http://localhost:5000/api/'):
     :type username: str
     :param password: password for connecting to taskfarm server
     :type password: str
-    :param url_base: base URL for taskfarm server API, defaults to 'http://localhost:5000/api/'
+    :param url_base: base URL for taskfarm server API,
+                     defaults to 'http://localhost:5000/api/'
     :type url_base: str
-    
+
     :return: list of runs
     :rtype: dict
     """
-    auth = HTTPBasicAuth(username,  password)
-    response = requests.get(url_base+'runs', auth=auth)
+    auth = HTTPBasicAuth(username, password)
+    response = requests.get(url_base + 'runs', auth=auth)
     if response.status_code != 200:
         raise RuntimeError('[HTTP {0}]: Content: {1}'.format(
             response.status_code, response.content))
@@ -37,14 +38,15 @@ class TaskFarm:
     :type username: str
     :param password: password for connecting to taskfarm server
     :type password: str
-    :param url_base: base URL for taskfarm server API, defaults to 'http://localhost:5000/api/'
+    :param url_base: base URL for taskfarm server API,
+                     defaults to 'http://localhost:5000/api/'
     :type url_base: str
     :param uuid: when specified load existing run with uuid
     :type uuid: str
     :param numTasks: create a new run wtih numTasks tasks
     :type numTasks: int
 
-    Intantiate a TaskFarm object with either a uuid to load an 
+    Intantiate a TaskFarm object with either a uuid to load an
     existing run from the database or create a new run by specifying
     the number of tasks.
 
@@ -57,7 +59,7 @@ class TaskFarm:
         self._session = requests.Session()
 
         # setup session
-        # from: https://www.peterbe.com/plog/best-practice-with-retries-with-requests
+        # from: https://www.peterbe.com/plog/best-practice-with-retries-with-requests  # noqa E501
         retries = 10
         retry = Retry(
             total=retries,
@@ -91,7 +93,7 @@ class TaskFarm:
             self._uuid = response.json()['uuid']
             self._numTasks = numTasks
         else:
-            response = self.session.get(self.url('runs/'+uuid),
+            response = self.session.get(self.url('runs/' + uuid),
                                         auth=self.token_auth)
             if response.status_code != 200:
                 raise RuntimeError('[HTTP {0}]: Content: {1}'.format(
@@ -107,7 +109,7 @@ class TaskFarm:
         :returns: full URL
         :rtype: str
 
-        construct full URL by appending url to url_base        
+        construct full URL by appending url to url_base
         """
         return '{0}{1}'.format(self._url_base, url)
 
@@ -140,7 +142,7 @@ class TaskFarm:
         :type info: str
         """
         response = self.session.get(
-            self.url('runs/'+self.uuid),
+            self.url('runs/' + self.uuid),
             params={'info': info}, auth=self.token_auth)
         if response.status_code != 200:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(
@@ -181,7 +183,7 @@ class TaskFarm:
         """
         assert task >= 0 and task < self.numTasks
         response = self.session.get(
-            self.url('runs/'+self.uuid+'/tasks/'+str(task)),
+            self.url('runs/' + self.uuid + '/tasks/' + str(task)),
             params={'info': info}, auth=self.token_auth)
         if response.status_code != 200:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(
@@ -204,7 +206,7 @@ class TaskFarm:
         assert task >= 0 and task < self.numTasks
         data = {info: value}
         response = self.session.put(
-            self.url('runs/'+self.uuid+'/tasks/'+str(task)),
+            self.url('runs/' + self.uuid + '/tasks/' + str(task)),
             json=data, auth=self.token_auth)
         if response.status_code != 204:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(
@@ -212,17 +214,18 @@ class TaskFarm:
 
     def restart(self, everything=False):
         """restart run
-        
-        :param everything: when set to True reset all tasks even completed ones, default set to False
+
+        :param everything: when set to True reset all tasks even completed
+                           ones, default set to False
         :type everything: bool
 
-        The taskfarm does not automaticcaly restart failed tasks. 
+        The taskfarm does not automaticcaly restart failed tasks.
         Use this method to restart tasks that are marked computing.
         Only restart a run when no more workers are computing.
         """
         data = {'all': str(everything)}
         response = self.session.post(
-            self.url('runs/'+self.uuid+'/restart'),
+            self.url('runs/' + self.uuid + '/restart'),
             params=data, auth=self.token_auth)
         if response.status_code != 204:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(
@@ -230,7 +233,7 @@ class TaskFarm:
 
     def delete(self):
         """delete run"""
-        response = self.session.delete(self.url('runs/'+self.uuid),
+        response = self.session.delete(self.url('runs/' + self.uuid),
                                        auth=self.token_auth)
         if response.status_code != 204:
             raise RuntimeError('[HTTP {0}]: Content: {1}'.format(
@@ -245,12 +248,13 @@ class TaskFarmWorker(TaskFarm):
     :type username: str
     :param password: password for connecting to taskfarm server
     :type password: str
-    :param url_base: base URL for taskfarm server API, defaults to 'http://localhost:5000/api/'
+    :param url_base: base URL for taskfarm server API,
+                     defaults to 'http://localhost:5000/api/'
     :type url_base: str
     :param uuid: when specified load existing run with uuid
     :type uuid: str
 
-    The taskfarm worker is initialised with the UUID of a run. 
+    The taskfarm worker is initialised with the UUID of a run.
     It provides an interface to the tasks associated with the run.
 
     """
@@ -289,14 +293,15 @@ class TaskFarmWorker(TaskFarm):
     def task(self):
         """the current task associated with the worker
 
-        If there is no task associated with the worker request a new 
+        If there is no task associated with the worker request a new
         task. Return None if there are no more tasks.
         """
         if self._task is None:
             self._percentageDone = None
             worker = {'worker_uuid': self.worker_uuid}
-            response = self.session.post(self.url('runs/'+self.uuid+'/task'),
-                                         json=worker, auth=self.token_auth)
+            response = self.session.post(
+                self.url('runs/' + self.uuid + '/task'),
+                json=worker, auth=self.token_auth)
             if response.status_code == 204:
                 # no more tasks
                 return self._task
@@ -317,7 +322,8 @@ class TaskFarmWorker(TaskFarm):
     def update(self, percentage):
         """update percentage done of current task
 
-        :param percentage: the value of the percentage done, must be between 0 and 100
+        :param percentage: the value of the percentage done, must be
+                           between 0 and 100
         :type percentage: float
         """
         if self._task is None:
@@ -334,6 +340,6 @@ class TaskFarmWorker(TaskFarm):
         """
         if self._task is not None:
             if self._percentageDone is not None and \
-               abs(self._percentageDone-100) < 1e-6:
+               abs(self._percentageDone - 100) < 1e-6:
                 self.setTaskInfo(self._task, 'status', 'done')
             self._task = None
