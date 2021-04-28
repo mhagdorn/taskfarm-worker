@@ -23,6 +23,11 @@ setup(
     install_requires=[
         'requests',
     ],
+    extras_require = {
+        'docs': [
+            'sphinx_rtd_theme',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'manageTF=taskfarm_worker.manage:main',
