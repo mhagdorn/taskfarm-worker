@@ -54,12 +54,13 @@ class TestTFCreateTF(BaseTest):
         self.assertEqual(tf.numTasks, self.ntasks)
         self.assertEqual(tf.uuid, self.uuid)
 
+
 class TestTF(BaseTest):
     pd = 40
     nd = 5
     nw = 2
     nc = 3
-    
+
     def setUp(self):
         super(TestTF, self).setUp()
         # create a new run
@@ -83,7 +84,7 @@ class TestTF(BaseTest):
         res = self.tf.info('')
         for k in info:
             self.assertEqual(res[k], info[k])
-        
+
     def test_percentageDone(self):
         self.requests_mock.register_uri(
             'GET', BASEURL + 'runs/' + self.uuid + '?info=percentDone',
