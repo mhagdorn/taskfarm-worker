@@ -30,12 +30,19 @@ setup(
         'lint': [
             'flake8>=3.5.0',
         ],
+        'testing': [
+            'nose2',
+            'requests-mock',
+            'testtools',
+            'fixtures'
+        ],
     },
     entry_points={
         'console_scripts': [
             'manageTF=taskfarm_worker.manage:main',
         ],
     },
+    test_suite='nose2.collector.collector',
     author=author,
     description="worker module for taskfarm",
 )
