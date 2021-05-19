@@ -181,7 +181,8 @@ class TaskFarm:
         :param info: the information to query
         :type info: str
         """
-        assert task >= 0 and task < self.numTasks
+        if task < 0 or task >= self.numTasks:
+            raise RuntimeError(f'task ID outside range 0 {self.numTasks-1}')
         response = self.session.get(
             self.url('runs/' + self.uuid + '/tasks/' + str(task)),
             params={'info': info}, auth=self.token_auth)
@@ -203,7 +204,8 @@ class TaskFarm:
         :type info: str
         :param value: the value to set it to
         """
-        assert task >= 0 and task < self.numTasks
+        if task < 0 or task >= self.numTasks:
+            raise RuntimeError(f'task ID outside range 0 {self.numTasks-1}')
         data = {info: value}
         response = self.session.put(
             self.url('runs/' + self.uuid + '/tasks/' + str(task)),
