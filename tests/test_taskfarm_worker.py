@@ -16,7 +16,7 @@ class TestTFRuns(testtools.TestCase):
 
 
 class BaseTest(testtools.TestCase):
-    ntasks = 10
+    ntasks = 5
     uuid = 'A_UUID'
 
     def setUp(self):
@@ -223,7 +223,7 @@ class TestTFWorker(TestTF):
         self.assertEqual(res, 0)
         self.assertEqual(self.tf._task, 0)
 
-    def test_task_done(self):
+    def test_task_all_done(self):
         # make sure there is currently no task
         self.assertIs(self.tf._task, None)
 
@@ -236,3 +236,57 @@ class TestTFWorker(TestTF):
 
         self.assertIs(res, None)
         self.assertIs(self.tf._task, None)
+
+    def test_task_update_fail(self):
+        self.test_task()
+
+        with testtools.ExpectedException(ValueError):
+            self.tf.update(-1)
+        with testtools.ExpectedException(ValueError):
+            self.tf.update(101)
+
+    def test_task_update(self):
+        self.test_task()
+        pd = 100
+
+        self.requests_mock.register_uri(
+            'PUT',
+            BASEURL + 'runs/' + self.uuid + '/tasks/0',
+            status_code=204)
+
+        self.tf.update(pd)
+        self.assertEqual(self.tf._percentageDone, pd)
+
+    def test_task_done(self):
+        self.test_task_update()
+        self.tf.done()
+        self.assertIs(self.tf._task, None)
+
+    def test_tasks(self):
+        # make sure there is currently no task
+        self.assertIs(self.tf._task, None)
+
+        responses = []
+        for i in range(self.ntasks):
+            responses.append({'status_code': 201, 'json': {'task': i}})
+            self.requests_mock.register_uri(
+                'GET',
+                BASEURL + 'runs/' + self.uuid + f'/tasks/{i}'
+                '?info=percentCompleted',
+                json={'percentCompleted': self.tpd})
+            self.requests_mock.register_uri(
+                'PUT',
+                BASEURL + 'runs/' + self.uuid + f'/tasks/{i}',
+                status_code=204)
+        responses.append({'status_code': 204})
+
+        self.requests_mock.register_uri(
+            'POST', BASEURL + 'runs/' + self.uuid + '/task', responses)
+
+        tasks = []
+        for task in self.tf.tasks:
+            tasks.append(task)
+            self.tf.done()
+
+        for i in range(self.ntasks):
+            self.assertEqual(i, tasks[i])
