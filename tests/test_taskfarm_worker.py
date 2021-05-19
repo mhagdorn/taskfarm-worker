@@ -121,9 +121,10 @@ class TestTF(BaseTest):
     def test_get_taskInfo_percent(self):
         self.requests_mock.register_uri(
             'GET',
-            BASEURL + 'runs/' + self.uuid + '/tasks/0' + '?info=percentDone',
-            json={'percentDone': self.tpd})
-        res = self.tf.getTaskInfo(0, 'percentDone')
+            BASEURL + 'runs/' + self.uuid + '/tasks/0'
+            '?info=percentCompleted',
+            json={'percentCompleted': self.tpd})
+        res = self.tf.getTaskInfo(0, 'percentCompleted')
         self.assertEqual(res, self.tpd)
 
     def test_get_taskInfo_status(self):
@@ -186,3 +187,52 @@ class TestTF(BaseTest):
             BASEURL + 'runs/' + self.uuid,
             status_code=204)
         self.tf.delete()
+
+
+class TestTFWorker(TestTF):
+
+    def setUp(self):
+        super(TestTFWorker, self).setUp()
+        self.requests_mock.register_uri(
+            'GET', BASEURL + 'runs/' + self.uuid,
+            json={'uuid': self.uuid,
+                  'numTasks': self.ntasks})
+        self.requests_mock.register_uri(
+            'POST', BASEURL + 'worker',
+            status_code=201)
+        self.tf = taskfarm_worker.TaskFarmWorker(
+            'user', 'pw', url_base=BASEURL, uuid=self.uuid)
+
+    def test_task(self):
+        # make sure there is currently no task
+        self.assertIs(self.tf._task, None)
+
+        self.requests_mock.register_uri(
+            'POST', BASEURL + 'runs/' + self.uuid + '/task',
+            status_code=201,
+            json={'task': 0})
+        self.requests_mock.register_uri(
+            'GET',
+            BASEURL + 'runs/' + self.uuid + '/tasks/0'
+            '?info=percentCompleted',
+            json={'percentCompleted': self.tpd})
+
+        # get a new task
+        res = self.tf.task
+
+        self.assertEqual(res, 0)
+        self.assertEqual(self.tf._task, 0)
+
+    def test_task_done(self):
+        # make sure there is currently no task
+        self.assertIs(self.tf._task, None)
+
+        self.requests_mock.register_uri(
+            'POST', BASEURL + 'runs/' + self.uuid + '/task',
+            status_code=204)
+
+        # get a new task
+        res = self.tf.task
+
+        self.assertIs(res, None)
+        self.assertIs(self.tf._task, None)
