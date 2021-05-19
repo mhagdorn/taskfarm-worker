@@ -61,6 +61,9 @@ class TestTF(BaseTest):
     nw = 2
     nc = 3
 
+    tpd = 34
+    status = 'computing'
+
     def setUp(self):
         super(TestTF, self).setUp()
         # create a new run
@@ -108,3 +111,78 @@ class TestTF(BaseTest):
             'GET', BASEURL + 'runs/' + self.uuid + '?info=numComputing',
             json={'numComputing': self.nc})
         self.assertEqual(self.tf.numComputing, self.nc)
+
+    def test_get_taskInfo_fail(self):
+        with testtools.ExpectedException(RuntimeError):
+            self.tf.getTaskInfo(-1, 'blub')
+        with testtools.ExpectedException(RuntimeError):
+            self.tf.getTaskInfo(self.ntasks, 'blub')
+
+    def test_get_taskInfo_percent(self):
+        self.requests_mock.register_uri(
+            'GET',
+            BASEURL + 'runs/' + self.uuid + '/tasks/0' + '?info=percentDone',
+            json={'percentDone': self.tpd})
+        res = self.tf.getTaskInfo(0, 'percentDone')
+        self.assertEqual(res, self.tpd)
+
+    def test_get_taskInfo_status(self):
+        self.requests_mock.register_uri(
+            'GET',
+            BASEURL + 'runs/' + self.uuid + '/tasks/0' + '?info=status',
+            json={'status': self.status})
+        res = self.tf.getTaskInfo(0, 'status')
+        self.assertEqual(res, self.status)
+
+    def test_get_taskInfo_all(self):
+        info = {
+            'percentDone': self.tpd,
+            'status': self.status}
+        self.requests_mock.register_uri(
+            'GET',
+            BASEURL + 'runs/' + self.uuid + '/tasks/0' + '?info=',
+            json=info)
+        res = self.tf.getTaskInfo(0, '')
+        for k in res:
+            self.assertEqual(res[k], info[k])
+
+    def test_set_taskInfo_fail(self):
+        with testtools.ExpectedException(RuntimeError):
+            self.tf.setTaskInfo(-1, 'blub', 'blah')
+        with testtools.ExpectedException(RuntimeError):
+            self.tf.setTaskInfo(self.ntasks, 'blub', 'blah')
+
+    def test_set_taskInfo_percent(self):
+        self.requests_mock.register_uri(
+            'PUT',
+            BASEURL + 'runs/' + self.uuid + '/tasks/0',
+            status_code=204)
+        self.tf.setTaskInfo(0, 'percentDone', 40)
+
+    def test_set_taskInfo_status(self):
+        self.requests_mock.register_uri(
+            'PUT',
+            BASEURL + 'runs/' + self.uuid + '/tasks/0',
+            status_code=204)
+        self.tf.setTaskInfo(0, 'status', 'done')
+
+    def test_restart(self):
+        self.requests_mock.register_uri(
+            'POST',
+            BASEURL + 'runs/' + self.uuid + '/restart',
+            status_code=204)
+        self.tf.restart()
+
+    def test_restart_all(self):
+        self.requests_mock.register_uri(
+            'POST',
+            BASEURL + 'runs/' + self.uuid + '/restart',
+            status_code=204)
+        self.tf.restart(everything=True)
+
+    def test_delete(self):
+        self.requests_mock.register_uri(
+            'DELETE',
+            BASEURL + 'runs/' + self.uuid,
+            status_code=204)
+        self.tf.delete()
