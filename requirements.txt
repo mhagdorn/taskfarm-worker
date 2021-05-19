@@ -1,1 +1,6 @@
 requests
+# for testing
+nose2
+requests-mock
+testtools
+fixtures
