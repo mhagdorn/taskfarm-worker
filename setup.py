@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 from sphinx.setup_command import BuildDoc
 
 name = 'taskfarm-worker'
-version = '0.2'
-release = '0.2.0'
+version = '0.3'
+release = '0.3.0'
 author = 'Magnus Hagdorn'
 
 setup(
