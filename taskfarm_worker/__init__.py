@@ -1,8 +1,2 @@
-from pkg_resources import get_distribution, DistributionNotFound
-try:
-    __version__ = get_distribution('taskfarm-worker').version
-except DistributionNotFound:
-    # package is not installed
-    pass
-
+from .__version__ import __version__
 from .taskfarm import *  # noqa: F401 F403
