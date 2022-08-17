@@ -1,6 +1,6 @@
 Introduction
 ============
-The taskfarm is a server-client application that tracks tasks to be completed. The server is provides a REST API to create and update runs. This is the python client documentation.
+The taskfarm is a server-client application that tracks tasks to be completed. The `server <https://taskfarm.readthedocs.io/en/latest/>`_ provides a REST API to create and update runs. This is the python client documentation.
 
 
 Terminology

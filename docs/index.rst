@@ -11,6 +11,7 @@ Welcome to Taskfarm Worker's documentation!
 
    intro
    using
+   example
    api
 
 Indices and tables
