@@ -10,6 +10,7 @@ Welcome to Taskfarm Worker's documentation!
    :caption: Contents:
 
    intro
+   installation
    using
    example
    api

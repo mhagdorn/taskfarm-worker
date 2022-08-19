@@ -21,3 +21,5 @@ You can now start some workers. For example you can start 5 workers using
   for i in $(seq 5); do
     python example.py -b http://localhost/api/ -u taskfarm -p hello --uuid 7aceaed8733d4d2f89a7f3f1e3ed6b1f &
   done
+
+Each worker requests a new task from the server, processes it and once completed it marks it as done. It then requests new tasks until all tasks are completed.
