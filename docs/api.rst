@@ -1,4 +1,6 @@
 Taskfarm Worker API
 ===================
-.. automodule:: taskfarm
+.. automodule:: taskfarm_worker
+   :imported-members:
+   :inherited-members:
    :members:

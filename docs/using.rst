@@ -3,7 +3,7 @@ Using the Taskfarm Client
 
 Setting up a run
 ----------------
-You can create a new run by intantiating a ``TaskFarm`` object:
+You can create a new run by intantiating a :class:`TaskFarm <taskfarm_worker.TaskFarm>` object:
 
 .. code-block:: python
 		
@@ -19,7 +19,7 @@ You can get a list of existing runs:
  runs = tfRuns('user','secret,
               url_base='http://localhost:5000/api/')
 
-You can also intantiate an ``TaskFarm`` object given the UUID of a run:
+You can also intantiate an :class:`TaskFarm <taskfarm_worker.TaskFarm>` object given the UUID of a run:
 
 .. code-block:: python
 
@@ -29,7 +29,7 @@ You can also intantiate an ``TaskFarm`` object given the UUID of a run:
 
 A Taskfarm Worker
 -----------------
-Once you have a run with some tasks you can create a worker like this
+Once you have a run with some tasks you can create a worker by intantiating a :class:`TaskFarmWorker <taskfarm_worker.TaskFarmWorker>` like this
 
 .. code-block:: python
 
