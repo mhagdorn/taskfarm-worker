@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Hagdorn"
+  given-names: "Magnus Karl Moritz"
+  orcid: "https://orcid.org/0000-0002-5076-4864"
+title: "taskfarm-worker"
+type: software
+version: "0.4.0"
+doi: 10.5281/zenodo.7010132
+date-released: 2022-08-19
+repository-code: "https://github.com/mhagdorn/taskfarm-worker"
+license: GPL-3.0
+preferred-citation:
+  authors:
+    - family-names: "Hagdorn"
+      given-names: "Magnus Karl Moritz"
+      orcid: "https://orcid.org/0000-0002-5076-4864"
+    - family-names: "Gourmelen"
+      given-names: "Noel"
+      orcid: "https://orcid.org/0000-0003-3346-9289"
+  title: "Taskfarm: A Client/Server Framework for Supporting Massive Embarrassingly Parallel Workloads"
+  year: 2023
+  type: article
+  doi: 10.5334/jors.393
