@@ -14,5 +14,5 @@ stresses the taskfarm server by spawning multiple clients. You can use the
 [stress/plot.py script](../master/stress/plot.py) to plot the csv files 
 produced by the stress script.
 
-[![test package taskfarm-worker](https://github.com/mhagdorn/taskfarm-worker/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/mhagdorn/taskfarm-worker/actions/workflows/pythonapp.yml)[![Documentation Status](https://readthedocs.org/projects/taskfarm-worker/badge/?version=latest)](https://taskfarm-worker.readthedocs.io/en/latest/?badge=latest)
+[![test package taskfarm-worker](https://github.com/mhagdorn/taskfarm-worker/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/mhagdorn/taskfarm-worker/actions/workflows/pythonapp.yml)[![Documentation Status](https://readthedocs.org/projects/taskfarm-worker/badge/?version=latest)](https://taskfarm-worker.readthedocs.io/en/latest/?badge=latest) [![CITATION.cff](https://github.com/mhagdorn/taskfarm-worker/actions/workflows/cff-validator.yml/badge.svg)](https://github.com/mhagdorn/taskfarm-worker/actions/workflows/cff-validator.yml)
 
