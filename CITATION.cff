@@ -23,3 +23,8 @@ preferred-citation:
   year: 2023
   type: article
   doi: 10.5334/jors.393
+  journal: "Journal of Open Research Software"
+  month: 1
+  start: 1 
+  issue: 1
+  volume: 11
